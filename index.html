@@ -20,6 +20,12 @@
     <main>
       <div id="image-wrapper">
         <canvas id="user-image" alt="Select Image" height="400" width="400">
+          <script>
+           /* var c = document.getElementById("user-image");
+  var ctx = c.getContext("2d");
+  ctx.fillStyle = "black";
+  ctx.fillRect(0,0,400,400); */
+          </script>
       </div>
       <form id="generate-meme">
         <input type="file" name="image" id="image-input" accept="image/*"><br>
@@ -40,9 +46,10 @@
       </form>
     </main>
   </div>
-
+  
   <!-- Main Script -->
-  <script src="script.js" type="module"></script>
+  <script src="script.js" type="module"> </script>
+
 </body>
 
 </html>
