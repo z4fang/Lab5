@@ -5,7 +5,7 @@
 
 ## Part 1:
 
-LINK TO YOUR PUBLISHED SITE
+LINK TO YOUR PUBLISHED SITE： https://z4fang.github.io/Lab5/
 
 ## Part 2:
 
