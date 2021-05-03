@@ -12,72 +12,10 @@ const volumeSlider = volumeGroup.querySelectorAll('input')[0];
 const volume = volumeGroup.querySelectorAll('img')[0];
 var synth = window.speechSynthesis;
 var voiceSelect = document.getElementById('voice-selection');
-//var volumeValue = volumeSlide.querySelectorAll('input')[0].value;
-//var volume = document.getElementsByTagName('img')[0];
-
-//var voice1 = new SpeechSynthesisUtterance(document.getElementById('text-top').value);
-//var voice2 = new SpeechSynthesisUtterance(document.getElementById('text-bottom').value);
 
 
-volumeGroup.addEventListener('input', () => {
-  if (volumeSlider.value <= 100 && volumeSlider.value >= 67) {
-    volume.src = 'icons/volume-level-3.svg';
-  }
-  else if (volumeSlider.value <= 66 && volumeSlider.value >= 34) {
-    volume.src = 'icons/volume-level-2.svg';
-  }
-  else if (volumeSlider.value <= 33 && volumeSlider.value >= 1) {
-    volume.src = 'icons/volume-level-1.svg';
-  }
-  else if (volumeSlider.value == 0) {
-    volume.src = 'icons/volume-level-0.svg';
-  }
-});
 
-var voices = [];
-function populateVoiceList() {
-  voices = synth.getVoices();
 
-  for(var i = 0; i < voices.length ; i++) {
-    var option = document.createElement('option');
-    option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
-
-    if(voices[i].default) {
-      option.textContent += ' -- DEFAULT';
-    }
-
-    option.setAttribute('data-lang', voices[i].lang);
-    option.setAttribute('data-name', voices[i].name);
-    voiceSelect.appendChild(option);
-
-  }
-
-  voiceSelect.remove(0);
-};
-
-readText.addEventListener('click', () => {
-  // Mozzila
-  var topText = document.getElementById('text-top');
-  var bottomText = document.getElementById('text-bottom');
-  var voice1 = new SpeechSynthesisUtterance(topText.value);
-  var voice2 = new SpeechSynthesisUtterance(bottomText.value);
-
-  var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
-
-  for(var i = 0; i < voices.length ; i++) {
-    if(voices[i].name === selectedOption) {
-      voice1.voice = voices[i];
-      voice2.voice = voices[i];
-    }
-  }
-
-  voice1.volume = volumeSlider.value/100;
-  voice2.volume = volumeSlider.value/100;
-
-  synth.speak(voice1); 
-  synth.speak(voice2);
-
-});
 
 
 texts.addEventListener('submit', (event)=> {
@@ -140,6 +78,66 @@ img.addEventListener('load', () => {
 
   const dimen = getDimmensions(canvas.width, canvas.height, img.width, img.height);
   ctx.drawImage(img, dimen.startX, dimen.startY, dimen.width, dimen.height);
+});
+
+volumeGroup.addEventListener('input', () => {
+  if (volumeSlider.value <= 100 && volumeSlider.value >= 67) {
+    volume.src = 'icons/volume-level-3.svg';
+  }
+  else if (volumeSlider.value <= 66 && volumeSlider.value >= 34) {
+    volume.src = 'icons/volume-level-2.svg';
+  }
+  else if (volumeSlider.value <= 33 && volumeSlider.value >= 1) {
+    volume.src = 'icons/volume-level-1.svg';
+  }
+  else if (volumeSlider.value == 0) {
+    volume.src = 'icons/volume-level-0.svg';
+  }
+});
+
+var voices = [];
+function populateVoiceList() {
+  voices = synth.getVoices();
+
+  for(var i = 0; i < voices.length ; i++) {
+    var option = document.createElement('option');
+    option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
+
+    if(voices[i].default) {
+      option.textContent += ' -- DEFAULT';
+    }
+
+    option.setAttribute('data-lang', voices[i].lang);
+    option.setAttribute('data-name', voices[i].name);
+    voiceSelect.appendChild(option);
+
+  }
+
+  voiceSelect.remove(0);
+};
+
+readText.addEventListener('click', () => {
+  // Mozzila
+  var topText = document.getElementById('text-top');
+  var bottomText = document.getElementById('text-bottom');
+  var voice1 = new SpeechSynthesisUtterance(topText.value);
+  var voice2 = new SpeechSynthesisUtterance(bottomText.value);
+
+  var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
+
+  for(var i = 0; i < voices.length ; i++) {
+    if(voices[i].name === selectedOption) {
+      voice1.voice = voices[i];
+      voice2.voice = voices[i];
+    }
+  }
+
+  voice1.volume = volumeSlider.value/100;
+  voice2.volume = volumeSlider.value/100;
+
+  synth.speak(voice1); 
+  synth.speak(voice2);
+
 });
 
 /**
