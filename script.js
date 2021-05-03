@@ -1,9 +1,123 @@
 // script.js
 const img = new Image(); // used to load image from <input> and draw to canvas
+const ffile = document.getElementById('image-input');
 const canvas = document.getElementById('user-image');
 const ctx = canvas.getContext('2d');
-var button = document.getElementsByTagName('button');
-var speechSynthesis = window.speechSynthesis;
+const texts = document.getElementById('generate-meme');
+const button = document.getElementsByTagName('button');
+
+const readText = button[2];
+const volumeGroup = document.getElementById('volume-group');
+const volumeSlider = volumeGroup.querySelectorAll('input')[0];
+const volume = volumeGroup.querySelectorAll('img')[0];
+var synth = window.speechSynthesis;
+var voiceSelect = document.getElementById('voice-selection');
+//var volumeValue = volumeSlide.querySelectorAll('input')[0].value;
+//var volume = document.getElementsByTagName('img')[0];
+
+//var voice1 = new SpeechSynthesisUtterance(document.getElementById('text-top').value);
+//var voice2 = new SpeechSynthesisUtterance(document.getElementById('text-bottom').value);
+
+
+volumeGroup.addEventListener('input', () => {
+  if (volumeSlider.value <= 100 && volumeSlider.value >= 67) {
+    volume.src = 'icons/volume-level-3.svg';
+  }
+  else if (volumeSlider.value <= 66 && volumeSlider.value >= 34) {
+    volume.src = 'icons/volume-level-2.svg';
+  }
+  else if (volumeSlider.value <= 33 && volumeSlider.value >= 1) {
+    volume.src = 'icons/volume-level-1.svg';
+  }
+  else if (volumeSlider.value == 0) {
+    volume.src = 'icons/volume-level-0.svg';
+  }
+});
+
+var voices = [];
+function populateVoiceList() {
+  voices = synth.getVoices();
+
+  for(var i = 0; i < voices.length ; i++) {
+    var option = document.createElement('option');
+    option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
+
+    if(voices[i].default) {
+      option.textContent += ' -- DEFAULT';
+    }
+
+    option.setAttribute('data-lang', voices[i].lang);
+    option.setAttribute('data-name', voices[i].name);
+    voiceSelect.appendChild(option);
+
+  }
+
+  voiceSelect.remove(0);
+};
+
+readText.addEventListener('click', () => {
+  // Mozzila
+  var topText = document.getElementById('text-top');
+  var bottomText = document.getElementById('text-bottom');
+  var voice1 = new SpeechSynthesisUtterance(topText.value);
+  var voice2 = new SpeechSynthesisUtterance(bottomText.value);
+
+  var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
+
+  for(var i = 0; i < voices.length ; i++) {
+    if(voices[i].name === selectedOption) {
+      voice1.voice = voices[i];
+      voice2.voice = voices[i];
+    }
+  }
+
+  voice1.volume = volumeSlider.value/100;
+  voice2.volume = volumeSlider.value/100;
+
+  synth.speak(voice1); 
+  synth.speak(voice2);
+
+});
+
+
+texts.addEventListener('submit', (event)=> {
+  var topText = document.getElementById('text-top').value;
+  var botText = document.getElementById('text-bottom').value;
+  //topSpeak = document.getElementById('text-top').value;
+
+  ctx.font = 'bold 35px Comic Sans';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'white';
+  ctx.fillText(topText,canvas.width / 2,canvas.height * 1/10);
+  ctx.fillText(botText,canvas.width / 2,canvas.height * 95/100);
+
+  button[0].disabled = true; //submit
+  button[1].disabled = false; //clear
+  button[2].disabled = false; //read text
+  voiceSelect.disabled = false;
+  populateVoiceList();
+  event.preventDefault();
+});
+
+
+const clear = document.getElementById('button-group').querySelectorAll('button')[0];
+clear.addEventListener('click', () => {
+  img.src = "";
+  img.alt = "";
+  texts.reset();
+  ctx.clearRect(0,0, canvas.width, canvas.height);
+  button[0].disabled = false; //submit
+  button[1].disabled = true; //clear
+  button[2].disabled = true; //read text
+});
+
+
+ffile.addEventListener('change', () =>{
+  let file = ffile.files[0];
+  img.src = URL.createObjectURL(file);
+  img.alt = file.name; 
+});
+
 
 // Fires whenever the img object loads a new image (such as with img.src =)
 // on Load
@@ -27,121 +141,6 @@ img.addEventListener('load', () => {
   const dimen = getDimmensions(canvas.width, canvas.height, img.width, img.height);
   ctx.drawImage(img, dimen.startX, dimen.startY, dimen.width, dimen.height);
 });
-
-
-//on change
-const File = document.getElementById('image-input');
-File.addEventListener('change', () =>{
-  let file = File.files[0];
-  img.src = URL.createObjectURL(file);
-  img.alt = file.name; 
-});
-
-function Voices()
-{
-  var voices = [];
-  voices = speechSynthesis.getVoices();
-  for (var i = 0; i < voices.length ; i++) {
-    var option = document.createElement('option');
-    option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
-
-    if(voices[i].default) {
-      option.textContent += ' -- DEFAULT';
-    }
-
-    option.setAttribute('data-lang', voices[i].lang);
-    option.setAttribute('data-name', voices[i].name);
-    voiceSel.add(option);
-
-  }
-};
-
-const texts = document.getElementById('generate-meme');
-texts.addEventListener('submit', (event)=> {
-  var topText = document.getElementById('text-top').value;
-  var botText = document.getElementById('text-bottom').value;
-  ctx.font = 'bold 35px Comic Sans';
-  ctx.textAlign = 'center';
-  ctx.fillStyle = 'white';
-  ctx.fillText(topText,canvas.width / 2,canvas.height * 1/10);
-  ctx.fillText(botText,canvas.width / 2,canvas.height * 95/100);
-
-  button[0].disabled = true; //submit
-  button[1].disabled = false; //clear
-  button[2].disabled = false; //read text
-  voiceSel.disabled = false;
-  Voices();
-  event.preventDefault();
-
-});
-
-const clear = document.getElementById('button-group').querySelectorAll('button')[0];
-clear.addEventListener('click', () => {
-  img.src = "";
-  img.alt = "";
-  texts.reset();
-  ctx.clearRect(0,0, canvas.width, canvas.height);
-  button[0].disabled = false; //submit
-  button[1].disabled = true; //clear
-  button[2].disabled = true; //read text
-});
-
-
-const readText = document.getElementById('button-group').querySelectorAll('button')[1];
-readText.addEventListener('click', () => {
-  // Mozzila
-  var voice1 = new SpeechSynthesisUtterance(document.getElementById('text-top').value);
-  var voice2 = new SpeechSynthesisUtterance(document.getElementById('text-bottom').value);
-  var selectedOption = voiceSel.selectedOption[0].getAttribute('data0name');
-  for(var i = 0; i < voices; i++)
-  {
-    voice1.voice = voices[i];
-    voice2.voice = voices[i];
-  }
-
-  voice1.volume = volumeValue/100;
-  voice2.volume = volumeValue/100;
-  speechSynthesis.speak(voice1);
-  speechSynthesis.speak(voice2);  
-
-});
-
-
-
-var voiceSel = document.getElementById('voice-selection');
-const volumeGroup = document.getElementById('volume-group');
-
-volumeGroup.addEventListener('input', () =>{
-  var volumeValue = volumeGroup.querySelectorAll('input')[0];
-  const volume = document.getElementsByTagName('img')[0];
-
-  if(volumeValue.value <= 100 && volumeValue.value >=67)  // 67 - 100
-  {
-    volume.src = "icons/volume-level-3.svg";
-    volume.alt = 'Volume Level 3';
-  }
-
-  else if(volumeValue.value <= 66 && volumeValue.value >=34) // 34 - 66
-  {
-    volume.src = "icons/volume-level-2.svg";
-    volume.alt = 'Volume Level 2';
-  }
-
-  else if(volumeValue.value <= 33 && volumeValue.value >=1) // 1 - 33
-  {
-    volume.src = "icons/volume-level-1.svg";
-    volume.alt = 'Volume Level 1';
-  }
-
-  else
-  {
-    volume.src = "icons/volume-level-0.svg";
-    volume.alt = 'Volume Level 0';
-  }
-
-});
-
-
 
 /**
  * Takes in the dimensions of the canvas and the new image, then calculates the new
