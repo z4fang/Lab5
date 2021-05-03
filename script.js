@@ -15,9 +15,6 @@ var voiceSelect = document.getElementById('voice-selection');
 
 
 
-
-
-
 texts.addEventListener('submit', (event)=> {
   var topText = document.getElementById('text-top').value;
   var botText = document.getElementById('text-bottom').value;
@@ -42,7 +39,7 @@ const clear = document.getElementById('button-group').querySelectorAll('button')
 clear.addEventListener('click', () => {
   img.src = "";
   img.alt = "";
-  texts.reset();
+  //texts.reset();
   ctx.clearRect(0,0, canvas.width, canvas.height);
   button[0].disabled = false; //submit
   button[1].disabled = true; //clear
@@ -72,6 +69,7 @@ img.addEventListener('load', () => {
   button[0].disabled = false;   // enable generate
   button[1].disabled = true;    // disable clear
   button[2].disabled = true;    // disable read text
+  //voiceSelect.disabled = false;
   
   ctx.fillStyle = 'black';
   ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -81,16 +79,16 @@ img.addEventListener('load', () => {
 });
 
 volumeGroup.addEventListener('input', () => {
-  if (volumeSlider.value <= 100 && volumeSlider.value >= 67) {
+  if (volumeSlider.value >= 67) {
     volume.src = 'icons/volume-level-3.svg';
   }
-  else if (volumeSlider.value <= 66 && volumeSlider.value >= 34) {
+  else if (volumeSlider.value >= 34) {
     volume.src = 'icons/volume-level-2.svg';
   }
-  else if (volumeSlider.value <= 33 && volumeSlider.value >= 1) {
+  else if (volumeSlider.value >= 1) {
     volume.src = 'icons/volume-level-1.svg';
   }
-  else if (volumeSlider.value == 0) {
+  else {
     volume.src = 'icons/volume-level-0.svg';
   }
 });
@@ -113,8 +111,14 @@ function populateVoiceList() {
 
   }
 
+  voiceSelect.disabled = false;
   voiceSelect.remove(0);
-};
+}
+
+populateVoiceList();
+if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = populateVoiceList;
+}
 
 readText.addEventListener('click', () => {
   // Mozzila
